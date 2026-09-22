@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage // <-- Importante para cargar la imagen web
+import coil.compose.AsyncImage
 import com.example.bukkin.data.entities.BookEntity
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -40,8 +40,6 @@ fun NetflixBookCard(
             ),
         contentAlignment = Alignment.Center
     ) {
-        // --- AQUÍ ESTÁ EL CAMBIO ---
-        // 1. Si el libro tiene una imagen traída de la API de Google Books
         if (!book.imageUrl.isNullOrBlank()) {
             AsyncImage(
                 model = book.imageUrl,
@@ -50,7 +48,6 @@ fun NetflixBookCard(
                 contentScale = ContentScale.Crop
             )
         } else {
-            // 2. Si es un libro manual (sin URL de imagen), mostramos la portada con color y texto
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -77,7 +74,7 @@ fun NetflixBookCard(
             }
         }
 
-        // --- MANTENEMOS TU OVERLAY AL DEJAR PRESIONADO (LONG CLICK) ---
+        // --- OVERLAY DE CALIFICACIÓN Y ESTADO ---
         if (showRatingOverlay) {
             Box(
                 modifier = Modifier
@@ -92,22 +89,45 @@ fun NetflixBookCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    if (book.status == "COMPLETED") {
-                        Text("Calificación", color = Color.Gray, fontSize = 12.sp)
-                        Text(
-                            text = "❤️ ${book.rating}/10",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    } else {
-                        Text(
-                            text = "Pendiente",
-                            color = Color.Yellow,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+                    when (book.status) {
+                        "COMPLETED" -> {
+                            Text("Tu Calificación", color = Color.Gray, fontSize = 11.sp)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            if (book.rating != null && book.rating > 0) {
+                                Text(
+                                    text = "⭐ ${book.rating}/5",
+                                    color = Color(0xFFFFD700),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            } else {
+                                Text(
+                                    text = "Falta puntuar 📝",
+                                    color = Color(0xFFFFB703),
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 13.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        "READING" -> {
+                            Text(
+                                text = "📖 Leyendo",
+                                color = Color(0xFF90E0EF),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+                        else -> { // PENDING
+                            Text(
+                                text = "⏳ Pendiente",
+                                color = Color.Yellow,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Toca para cerrar",

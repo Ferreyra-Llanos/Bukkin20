@@ -61,6 +61,9 @@ dependencies {
     // Coil (Carga de imágenes web en Compose)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
+    // WorkManager para tareas programadas y notificaciones de fondo
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

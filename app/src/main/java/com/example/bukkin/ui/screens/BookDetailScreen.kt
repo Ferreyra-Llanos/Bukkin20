@@ -160,13 +160,29 @@ fun BookDetailScreen(
             // 3. CALIFICACIÓN (Solo si está terminado)
             if (book.status == "COMPLETED") {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Tu calificación", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Tu calificación", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
+                        if (book.rating == null) {
+                            Text(
+                                text = "(Falta puntuar)",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         val currentRating = book.rating ?: 0
                         for (i in 1..5) {
-                            val isStarred = i <= (currentRating / 2)
+                            val isStarred = i <= currentRating
                             Icon(
                                 imageVector = if (isStarred) Icons.Filled.Star else Icons.Outlined.Star,
                                 contentDescription = "Estrella $i",
@@ -174,7 +190,8 @@ fun BookDetailScreen(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clickable {
-                                        viewModel.updateBook(book.copy(rating = i * 2))
+                                        // Guardamos directamente el valor de 1 a 5 estrellas
+                                        viewModel.updateBook(book.copy(rating = i))
                                     }
                             )
                         }
