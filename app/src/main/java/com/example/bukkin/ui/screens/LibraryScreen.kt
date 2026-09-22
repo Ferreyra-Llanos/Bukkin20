@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bukkin.ViewModel.BookViewModel
 import com.example.bukkin.ui.components.AddBookDialog
+import com.example.bukkin.ui.components.AddBookOnlineDialog
 import com.example.bukkin.ui.components.BookSection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,13 +23,15 @@ import com.example.bukkin.ui.components.BookSection
 fun LibraryScreen(
     viewModel: BookViewModel,
     onBookClick: (Int) -> Unit,
-    onProfileClick: () -> Unit // <-- NUEVO: Agregamos el callback para ir al perfil
+    onProfileClick: () -> Unit
 ) {
     val books by viewModel.allBooks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
 
-    var showAddDialog by remember { mutableStateOf(false)}
+    // Estados para controlar los dos diálogos
+    var showAddDialog by remember { mutableStateOf(false) }
+    var showAddOnlineDialog by remember { mutableStateOf(false) } // <-- NUEVO
 
     val filteredBooks = books.filter {
         it.title.contains(searchQuery, ignoreCase = true) ||
@@ -47,7 +51,7 @@ fun LibraryScreen(
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("Buscar libro...") },
+                            placeholder = { Text("Buscar en biblioteca...") },
                             singleLine = true,
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = Color.Transparent,
@@ -58,7 +62,7 @@ fun LibraryScreen(
                         )
                     } else {
                         Text(
-                            text = "Bukkin",
+                            text = "BookMind",
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -66,11 +70,20 @@ fun LibraryScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = { isSearchActive = !isSearchActive }) {
-                        Icon(Icons.Default.Search, contentDescription = "Buscar")
+                        Icon(Icons.Default.Search, contentDescription = "Buscar local")
                     }
                 },
                 actions = {
-                    // MODIFICADO: Ahora ejecuta la acción de ir al perfil
+                    // NUEVO: Botón para abrir la búsqueda en Google Books API
+                    IconButton(onClick = { showAddOnlineDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Language,
+                            contentDescription = "Buscar en internet",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    // Botón existente para ir al Perfil
                     IconButton(onClick = { onProfileClick() }) {
                         Icon(Icons.Default.AccountCircle, contentDescription = "Perfil")
                     }
@@ -83,7 +96,7 @@ fun LibraryScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar Libro")
+                Icon(Icons.Default.Add, contentDescription = "Agregar Libro Manual")
             }
         }
     ) { paddingValues ->
@@ -106,6 +119,8 @@ fun LibraryScreen(
                 item { BookSection("Terminados", completedBooks, onBookClick) }
             }
         }
+
+        // 1. Diálogo para agregar libro manualmente
         if (showAddDialog) {
             AddBookDialog(
                 onDismiss = { showAddDialog = false },
@@ -113,6 +128,14 @@ fun LibraryScreen(
                     viewModel.addBook(title, author, colorArgb)
                     showAddDialog = false
                 }
+            )
+        }
+
+        // 2. NUEVO: Diálogo para buscar en Google Books API
+        if (showAddOnlineDialog) {
+            AddBookOnlineDialog(
+                viewModel = viewModel,
+                onDismiss = { showAddOnlineDialog = false }
             )
         }
     }

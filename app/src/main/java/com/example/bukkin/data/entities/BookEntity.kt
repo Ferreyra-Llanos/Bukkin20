@@ -13,5 +13,6 @@ data class BookEntity (
     val rating: Int? = null, // Escala del 0 al 10
     val coverUrl: String? = null, // Para cuando agreguemos portadas reales
     val coverColor: Int = 0xFFCCCCCC.toInt(), // Color temporal para la portada tipo Netflix
+    val imageUrl: String? = null, // NUEVO: URL de portada si proviene de la API
     val lastActive: Long = System.currentTimeMillis() // ¡Clave para los "Últimos libros"!
 )
