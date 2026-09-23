@@ -95,7 +95,7 @@ fun LibraryScreen(
                         )
                     } else {
                         Text(
-                            text = "BookMind",
+                            text = "Bukkin",
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Bukkin" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Bukkin" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenBackground">#121212</item>
         <item name="postSplashScreenTheme">@style/Theme.Bukkin</item>
     </style>
 </resources>

@@ -42,6 +42,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.runtime)
     val roomVersion = "2.6.1"
@@ -64,6 +65,7 @@ dependencies {
     // WorkManager para tareas programadas y notificaciones de fondo
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

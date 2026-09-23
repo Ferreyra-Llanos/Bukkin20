@@ -16,7 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Person
@@ -35,13 +37,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.bukkin.ViewModel.BookViewModel
 import com.example.bukkin.data.receiver.ReminderScheduler
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: BookViewModel,
-    onBackClick: (() -> Unit)? = null
+    onBackClick: (() -> Unit)? = null,
+    isDarkTheme: Boolean = false,               // <-- PARÁMETRO PARA MODO OSCURO
+    onToggleDarkTheme: (Boolean) -> Unit = {}   // <-- FUNCIÓN PARA CAMBIAR TEMA
 ) {
     val context = LocalContext.current
 
@@ -54,7 +57,7 @@ fun ProfileScreen(
 
     // Estados para el Recordatorio Diario
     var isReminderEnabled by remember { mutableStateOf(false) }
-    var selectedHour by remember { mutableIntStateOf(21) } // 21:00 hs por defecto
+    var selectedHour by remember { mutableIntStateOf(21) }
     var selectedMinute by remember { mutableIntStateOf(0) }
     var showTimePickerDialog by remember { mutableStateOf(false) }
 
@@ -131,7 +134,59 @@ fun ProfileScreen(
 
             HorizontalDivider()
 
-            // 2. NUEVA SECCIÓN: RECORDATORIO Y HÁBITO DIARIO
+            // 2. SECCIÓN: CONFIGURACIÓN DE APARIENCIA (MODO OSCURO)
+            Text(
+                text = "Apariencia",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkTheme) Icons.Default.DarkMode else Icons.Default.LightMode,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Column {
+                            Text(
+                                text = "Modo Oscuro",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp
+                            )
+                            Text(
+                                text = if (isDarkTheme) "Activado" else "Desactivado",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Switch(
+                        checked = isDarkTheme,
+                        onCheckedChange = { onToggleDarkTheme(it) }
+                    )
+                }
+            }
+
+            // 3. SECCIÓN: RECORDATORIO Y HÁBITO DIARIO
             Text(
                 text = "Hábito de Lectura",
                 fontWeight = FontWeight.Bold,
@@ -240,7 +295,7 @@ fun ProfileScreen(
                 }
             }
 
-            // 3. FILA DE ESTADÍSTICAS PRINCIPALES
+            // 4. FILA DE ESTADÍSTICAS PRINCIPALES
             Text(
                 text = "Resumen General",
                 fontWeight = FontWeight.Bold,
@@ -268,7 +323,7 @@ fun ProfileScreen(
                 )
             }
 
-            // 4. DESGLOSE DEL ESTADO DE LECTURA
+            // 5. DESGLOSE DEL ESTADO DE LECTURA
             Text(
                 text = "Tu progreso actual",
                 fontWeight = FontWeight.Bold,
